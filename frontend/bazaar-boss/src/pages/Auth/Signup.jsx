@@ -4,6 +4,8 @@ import {Link, useNavigate} from 'react-router-dom';
 import Input from '../../components/Inputs/Input';
 import { validateEmail } from '../../utils/helper';
 import ProfilePhotoSelector from '../../components/Inputs/ProfilePhotoSelector';
+import { API_PATHS } from '../../utils/apiPaths';
+import axiosInstance from '../../utils/axiosInstance';
 
 const Signup = () => {
 
@@ -40,8 +42,31 @@ const Signup = () => {
     setError("");
 
     //Signup api call
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+        fullname,
+        email,
+        password
+      });
 
-  }
+      const { token, user } = response.data;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        navigate('/dashboard');
+      }
+    }catch(error){
+      if ( error.response && error.response.data.message ){
+        setError( error.response.data.message );
+      } else {
+        setError( "Something went wrong. Please try again later.")
+      }
+    }
+  } 
+
+  
+
+
 
   return (
     <AuthLayout>
@@ -83,13 +108,13 @@ const Signup = () => {
           {error && <p className='text-red-500 text-xs pb-2.5 '>{error}</p>}
           
                   <button type='submit' className='btn-primary'>
-                    LOGIN
+                    SIGNUP
                   </button>
           
                   <p className='text-[13px] text-slate-800 mt-3'>
-                    Don't have an account?{" "}
+                    Already have an account?{" "}
                     <Link className="font-medium text-primary underline" to="/login">
-                      SignUp
+                      Login
                     </Link>
                   </p>
 
@@ -98,6 +123,6 @@ const Signup = () => {
       </div>
     </AuthLayout>
   )
-}
 
+}
 export default Signup
