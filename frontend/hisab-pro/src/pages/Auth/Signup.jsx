@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import AuthLayout from '../../components/Layouts/AuthLayout'
 import {Link, useNavigate} from 'react-router-dom';
 import Input from '../../components/Inputs/Input';
@@ -6,6 +6,8 @@ import { validateEmail } from '../../utils/helper';
 import ProfilePhotoSelector from '../../components/Inputs/ProfilePhotoSelector';
 import { API_PATHS } from '../../utils/apiPaths';
 import axiosInstance from '../../utils/axiosInstance';
+import { UserContext } from '../../context/UserContext';
+import uploadImage from '../../utils/uploadImage';
 
 const Signup = () => {
 
@@ -18,11 +20,12 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
+   const { updateUser } = useContext(UserContext);
+
   //handle signup form
   const handleSignup = async (e)=>{
     e.preventDefault();
 
-    let profileImageURL = "";
 
     if (!fullname){
       setError("Please enter your full name.")
@@ -43,16 +46,28 @@ const Signup = () => {
 
     //Signup api call
     try {
+
+      let profileImageUrl = "";
+
+      //upload profile pic if present
+      if( profilePic ) {
+        const imageuploadRes = await uploadImage(profilePic);
+        console.log(imageuploadRes);
+        profileImageUrl = imageuploadRes || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
+      }
+
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         fullname,
         email,
-        password
+        password,
+        profileImageUrl
       });
 
       const { token, user } = response.data;
 
       if (token) {
         localStorage.setItem("token", token);
+        updateUser(user);
         navigate('/dashboard');
       }
     }catch(error){
