@@ -48,16 +48,54 @@ exports.getDashboardData = async (req, res) => {
             { $limit: 1 }
         ]);
 
-        // revenue in last 30 days
-        const revenue30 = await Sales.aggregate([
-            { $match: { userId: new mongoose.Types.ObjectId(userId), createdAt: { $gte: last30Days } } },
+        // total revenue generated all time
+        const totalRevenue = await Sales.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
             { $group: { _id: null, total: { $sum: "$totalAmount" } } }
         ]);
 
-        // most recent sales (last 10)
+        // most recent items stocked (last 5) 
+        const recentStocks = await Inventory.find({ userId })
+            .sort({ createdAt: -1 })
+            .limit(5);
+
+        // most recent sales (last 5)
         const recentSales = await Sales.find({ userId })
             .sort({ createdAt: -1 })
-            .limit(10);
+            .limit(5);
+
+        // revenue share by top items (limit 5)
+        const revenueShare = await Sales.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            {
+            $group: {
+                _id: "$itemName",
+                revenue: { $sum: "$totalAmount" }
+            }
+            },
+            { $sort: { revenue: -1 } },
+            { $limit: 5 }
+        ]);
+
+        // Top items sold in last 30 days
+        const topItemsSold = await Sales.aggregate([
+            {
+            $match: {
+                userId: new mongoose.Types.ObjectId(userId),
+                createdAt: { $gte: last30Days }
+            }
+            },
+            {
+            $group: {
+                _id: "$itemName",
+                totalQuantitySold: { $sum: "$quantitySold" }
+            }
+            },
+            { $sort: { totalQuantitySold: -1 } },
+            { $limit: 10 }
+        ]);
+        
+        
 
         res.status(200).json({
             totalStocked60Days: stocked60[0]?.total || 0,
@@ -66,8 +104,11 @@ exports.getDashboardData = async (req, res) => {
             sold30Days: sold30[0]?.total || 0,
             currentInventoryValue: inventoryValue[0]?.value || 0,
             bestSellingItem: bestSeller[0]?._id || "N/A",
-            revenueLast30Days: revenue30[0]?.total || 0,
-            recentSales
+            totalRevenue: totalRevenue[0]?.total || 0,
+            recentSales,
+            recentStocks,
+            revenueShare,
+            topItemsSold
         });
     } catch (err) {
         console.error("Dashboard error:", err);

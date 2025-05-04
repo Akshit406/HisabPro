@@ -42,6 +42,10 @@ const SalesSchema = new mongoose.Schema({
     type: String
   },
 
+  icon : {
+    type: String
+  },
+
   dateOfSale: {
     type: Date,
     default: Date.now

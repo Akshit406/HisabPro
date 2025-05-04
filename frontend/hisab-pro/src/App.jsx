@@ -10,6 +10,10 @@ import Signup from './pages/Auth/Signup'
 import Home from './pages/Dashboard/Home'
 
 import UserProvider from './context/UserContext'
+import Inventory from './pages/Inventory'
+import Sales from './pages/Sales'
+import SalesDetailed from './components/Sales/SalesDetailed'
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   return (
@@ -21,9 +25,13 @@ const App = () => {
           <Route path='/login' exact element={<Login />} />
           <Route path='/signup' exact element={<Signup />} />
           <Route path='/dashboard' exact element={<Home />} />
+          <Route path='/inventory' exact element={<Inventory />} />
+          <Route path='/sales' exact element={<Sales />} />
+          <Route path="/sales/:id" element={<SalesDetailed />} />
           
         </Routes>
       </Router>
+      <Toaster position="bottom-right" />
     </div>
     </UserProvider>
   )

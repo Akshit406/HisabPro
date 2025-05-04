@@ -35,7 +35,8 @@ exports.createSale = async (req, res) => {
             quantitySold,
             pricePerUnit: inventoryItem.price,
             totalAmount: quantitySold * inventoryItem.price,
-            category: inventoryItem.category
+            category: inventoryItem.category,
+            icon: inventoryItem.icon
         })
 
         await newSale.save();
