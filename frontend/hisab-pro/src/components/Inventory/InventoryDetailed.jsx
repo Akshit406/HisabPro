@@ -33,7 +33,7 @@ const InventoryDetailed = () => {
 
                 <InventoryColumn
                     label="Item Id"
-                    field={inventory._Id}
+                    field={inventory._id}
                 />
 
                 <InventoryColumn
