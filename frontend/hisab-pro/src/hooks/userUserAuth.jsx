@@ -34,5 +34,5 @@ export const userUserAuth = () => {
         return () => {
             isMounted = false;
         };
-    }, [updateUser, clearUser, navigate]);
+    }, [user, updateUser, clearUser, navigate]);
 }
