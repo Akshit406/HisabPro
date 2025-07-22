@@ -33,6 +33,14 @@ const AddInventoryForm = ({ onAddStocks }) => {
         placeholder=""
         type="text"
       />
+
+      <Input
+        value={inventoryForm.quantity}
+        onChange={({ target }) => handleChange("quantity", target.value)}
+        label="Quantity"
+        placeholder=""
+        type="number"
+      />
       <Input
         value={inventoryForm.quantitySold}
         onChange={({ target }) => handleChange("price", target.value)}
