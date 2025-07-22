@@ -46,11 +46,13 @@ const Inventory = () => {
     //validation check
    
     if(!itemName || !quantity || !price) {
-      toast.error("Item name, Quantity and Price are required fields.")
+      toast.error("Item name, Quantity and Price are required fields.");
+      return;
     }
 
     if(!quantity || isNaN(quantity) || Number(quantity) <= 0) {
-      toast.error("Quantity must be a valid number greater than zero")
+      toast.error("Quantity must be a valid number greater than zero");
+      return;
     }
 
     if(loading) return;
